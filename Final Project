@@ -1,0 +1,401 @@
+#imports necessary libraries
+from tkinter import *
+from PIL import ImageTk,Image
+
+#defines function used to open a new frame
+def show_frame(frame):
+  frame.tkraise()
+
+#establishes variables that will be used later on
+cost = 0
+order = ''
+
+#creates the window
+window = Tk()
+window.title('Three Ps Online Ordering')
+window.geometry('500x500')
+
+window.rowconfigure(0, weight=1)
+window.columnconfigure(0, weight=1)
+
+#defines all of the frames
+frame1 = Frame(window)
+frame2 = Frame(window)
+frame3 = Frame(window)
+frame4 = Frame(window)
+frame5 = Frame(window)
+frame6 = Frame(window)
+frame7 = Frame(window)
+frame8 = Frame(window)
+
+#establishes the conditions for the frames
+for frame in (frame1, frame2, frame3, frame4, frame5, frame6, frame7, frame8):
+  frame.grid(row=0, column=0, sticky='nsew')
+
+#cost function used to update the cost and update the cost label in frame7
+def cost_func():
+    str_cost = 'Total Cost: $' + str(cost)
+    cost_label.config(text=str_cost)
+
+#function used to exit out of the application as a whole
+def close_window():
+  window.destroy()
+#-------------------------Frame1
+#establishes the frames
+frame1_title = Label(frame1, text="Welcome to Three Ps", bg='red')
+frame1_title.pack(fill='x')
+
+#button that will go to classics
+classic_btn = Button(frame1, text="Choose from our Classics", command=lambda:show_frame(frame2))
+classic_btn.pack(expand = True, fill = BOTH)
+
+#button that will go to BYO pizza
+byo_btn = Button(frame1, text="Build Your Own Pizza", command=lambda:show_frame(frame3))
+byo_btn.pack(expand = True, fill = BOTH)
+
+#button that will go to the sides
+extras_btn = Button(frame1, text="Choose from our Handcrafted Sides", command=lambda:show_frame(frame4))
+extras_btn.pack(expand = True, fill = BOTH)
+
+#button that will go to the drinks
+drinks_btn = Button(frame1, text='Add a Drink', command=lambda:show_frame(frame5))
+drinks_btn.pack(expand = True, fill = BOTH)
+
+#button that will go to the cart
+cart_btn = Button(frame1, text='Go to Cart', command=lambda:show_frame(frame6))
+cart_btn.pack(expand = True, fill = BOTH)
+
+#button that will exit Three Ps
+exit_btn = Button(frame1, text="Close Three Ps Ordering", command=lambda:close_window())
+exit_btn.pack(expand = True, fill = BOTH)
+
+#-------------------------Frame2
+#frame for all the classics
+frame2_title = Label(frame2, text="Classic Pizzas", bg='red')
+frame2_title.pack(fill='x')
+
+note_label = Label(frame2, text="*Note* all classic pizzas come in size: Large")
+note_label.pack
+
+#list used for the contents of the listbox
+my_pizza_list = ['Meat Lovers',
+             'Three Cheese',
+             'Deep Dish',
+             'Chicken Buffalo',
+             'Vegetarian']
+
+#function that adds the selected pizzas to the order
+def add_pizza():
+  global cost
+  global order
+  for item in pizza_list.curselection():
+    cost += 15
+    order = order + str(pizza_list.get(item)) + '- $15'+'\n' + '----------' + '\n'
+    receipt.config(text=order)
+  cost_func()
+
+#creates listbox for the pizzas
+pizza_list = Listbox(frame2, selectmode=MULTIPLE, bg='black', fg='red')
+
+#adds the selected pizzas to pizza_list
+for item in my_pizza_list:
+  pizza_list.insert(0, item)
+pizza_list.pack()
+
+#adds selcted items to the receipt
+add_btn = Button(frame2, text="Add to Cart", command=add_pizza)
+add_btn.pack()
+
+#button that goes back to the home page
+main_btn = Button(frame2, text="Back to Home", command=lambda:show_frame(frame1))
+main_btn.pack()
+
+#-------------------------Frame3
+#frame for BYO pizza
+frame3_title = Label(frame3, text="Build Your Own Pizza", bg='red')
+frame3_title.pack(fill='x')
+
+#list used for the sizes
+sizes = ['Small',
+        'Medium',
+        'Large']
+
+#list used for the sauces
+sauces = [
+  "Marinara",
+  "Buffalo",
+  "Barbeque",
+  "Ranch",
+  "Pesto"
+]
+
+#list used for the crusts
+crusts = [
+  "Thin",
+  "Deep Pan",
+  "Stuffed",
+  "Gluten Free"
+]
+
+#list used for the toppings
+toppings = [
+  "Pepperoni",
+  "Chicken",
+  "Bacon",
+  "Sausage",
+  "Ham",
+  "Pineapple",
+  "Olives",
+  "Green Pepper",
+  "Mushrooms"
+]
+
+#creates the variables for the various checkbuttons
+clicked = StringVar()
+clicked.set('Size')
+sa_clicked = StringVar()
+sa_clicked.set('Sauce')
+c_clicked = StringVar()
+c_clicked.set('Crust')
+
+#creates the drop down menus for size, sauce, and crust
+sizeDrop = OptionMenu(frame3, clicked, *sizes)
+sizeDrop.pack()
+sauceDrop = OptionMenu(frame3, sa_clicked, *sauces)
+sauceDrop.pack()
+crustDrop = OptionMenu(frame3, c_clicked, *crusts)
+crustDrop.pack()
+
+#creates a listbox for the toppings
+toppings_list = Listbox(frame3, selectmode=MULTIPLE, bg='black', fg='red')
+topping = ''
+
+#adds the toppings selected to the BYO order
+def add_toppings():
+  global topping
+  global toppings
+  for item in toppings_list.curselection():
+    topping = topping + str(toppings_list.get(item)) + '|'
+  topping = topping[:-1]
+  if topping == '':
+    topping = 'None'
+
+#adds the selected toppings to toppings_list
+for item in toppings:
+  toppings_list.insert(0, item)
+toppings_list.pack()
+
+#adds all of the BYO contents to the receipt
+def add_byo():
+  add_toppings()
+  result = ''
+  global cost
+  global topping
+  global toppings
+  global order
+  if str(clicked.get()) == 'Small':
+    cost += 18
+    cost_str = '$18'
+  elif str(clicked.get()) == "Medium":
+    cost += 22
+    cost_str = '$22'
+  else:
+    cost += 25
+    cost_str = '$25'
+  if str(clicked.get()) != 'Size' and str(sa_clicked.get()) != "Sauce" and str(c_clicked.get()) != "Crust":
+    order = order + "Custom made pizza - "+ cost_str + '\n' + "Size: " + str(clicked.get()) + '\n' + "Sauce: " + str(sa_clicked.get()) + "\n" + 'Crust: ' + str(c_clicked.get() + '\n' + 'Topping(s): ' + topping + '\n'+'-----------'+'\n')
+    receipt.config(text=order)
+    result = "Your pizza has been added to cart."
+  else:
+    result = 'One or more drop downs are not entered.'
+  add_lbl2.config(text=result)
+  cost_func()
+
+#if the drop downs were left empty, this label will show declaring that they were left empty
+add_lbl2 = Label(frame3, text='')
+add_lbl2.pack()
+
+#adds the contents to the cart
+add_btn = Button(frame3, text="Add to Cart", command=add_byo)
+add_btn.pack()
+
+#button that goes to the home page
+main_btn = Button(frame3, text="Back to Home", command=lambda:show_frame(frame1))
+main_btn.pack()
+
+#-------------------------Frame4
+#frame for all of the sides
+frame4_title = Label(frame4, text="Handcrafted Sides", bg='red')
+frame4_title.pack(fill='x')
+
+#list for the sides
+sides = ['Bread Sticks',
+        'Onion Rings',
+        'Cheese Curds',
+        'Garlic Bread',
+        'Ceasar Salad']
+
+#creates a listbox for the sides
+sides_list = Listbox(frame4, selectmode=MULTIPLE, bg='black', fg='red')
+
+#function that adds each of the selected sides to the order
+def add_sides():
+  global order
+  global cost
+  for item in sides_list.curselection():
+    cost += 5
+    order = order + str(sides_list.get(item)) + '- $5'+'\n' + '----------' + '\n'
+    receipt.config(text=order)
+  cost_func()
+
+#adds each selected side to sides_list
+for item in sides:
+  sides_list.insert(0, item)
+sides_list.pack()
+
+#adds the contents to the cart
+add_btn = Button(frame4, text = "Add to Cart", command=add_sides)
+add_btn.pack()
+
+#button that goes to the home page
+main_btn = Button(frame4, text="Back to Home", command=lambda:show_frame(frame1))
+main_btn.pack()
+
+#-------------------------Frame5
+#frame for the drinks
+frame5_title = Label(frame5, text="Drinks", bg='red')
+frame5_title.pack(fill='x')
+
+#list for the drinks
+drinks = ['Pepsi',
+         'Diet Pepsi',
+         'Mr. Pibb',
+         'Powerade',
+         'Bud Light',
+         'Miller Lite']
+
+#creates a listbox for the drinks
+drinks_list = Listbox(frame5, selectmode=MULTIPLE, bg='black', fg='red')
+
+#function to add each selected drink to the order
+def add_drinks():
+  global order
+  global cost
+  for item in drinks_list.curselection():
+    cost += 4
+    order = order + str(drinks_list.get(item)) + '- $4'+'\n' + '----------' + '\n'
+    receipt.config(text=order)
+  cost_func()
+
+#adds every selected drink to drinks_list
+for item in drinks:
+  drinks_list.insert(0, item)
+drinks_list.pack()
+
+#button that adds the drink contents to cart
+add_btn = Button(frame5, text = "Add to Cart", command=add_drinks)
+add_btn.pack()
+
+#button to go to the home page
+main_btn = Button(frame5, text="Back to Home", command=lambda:show_frame(frame1))
+main_btn.pack()
+
+#-------------------------Frame6
+#frame for the cart
+frame6_title = Label(frame6, text="Checkout", bg='red')
+frame6_title.pack(fill='x')
+
+label = Label(frame6, text='Your cart: ')
+label.pack(anchor='w')
+
+#label that shows the receipt
+receipt = Label(frame6, text='Your cart is empty')
+receipt.pack(anchor='w')
+
+#label that shows the total cost
+cost_label = Label(frame6, text='Total Cost: 0')
+cost_label.pack(anchor='w')
+
+#function that clears the cart and the cost
+def clear_cart():
+  global cost
+  cost = 0
+  cost_func()
+  receipt.config(text='Your cart is empty')
+
+#button that clears the cart
+clear_btn = Button(frame6, text="Clear Cart", command=lambda:clear_cart())
+clear_btn.pack()
+
+#button that goes to the checkout frame
+checkout_btn = Button(frame6, text="Proceed to Checkout", command=lambda:show_frame(frame7))
+checkout_btn.pack()
+
+#button that goes back to the home page
+main_btn = Button(frame6, text="Back to Home", command=lambda:show_frame(frame1))
+main_btn.pack()
+#-------------------------Frame7
+#frame for the checkout
+frame7_title = Label(frame7, text="Checkout", bg='red')
+frame7_title.pack(fill='x')
+
+#label and entry for the user's name
+name_label = Label(frame7, text="Please enter your name below:")
+name_label.pack()
+name_entry = Entry(frame7)
+name_entry.pack()
+
+#label and entry for the user's phone number
+phone_label = Label(frame7, text='Please enter your phone number below:')
+phone_label.pack()
+phone_entry = Entry(frame7)
+phone_entry.pack()
+
+#label and entry for the user's address
+address_label = Label(frame7, text='Please enter your address below:')
+address_label.pack()
+address_entry = Entry(frame7)
+address_entry.pack()
+
+#function that will clear the entry and go to frame8
+def confirm_frame(frame):
+  frame.tkraise()
+  name_entry.delete(0, END)
+  phone_entry.delete(0, END)
+  address_entry.delete(0, END)
+  clear_cart()
+
+delivery = ['Deliver',
+           'Pick-Up']
+delivery_list = Listbox(frame7, bg='black', fg='red')
+
+for item in delivery:
+  delivery_list.insert(0, item)
+delivery_list.pack()
+
+#button that will go to frame8
+confirm_btn = Button(frame7, text='Confirm Order', command=lambda:confirm_frame(frame8))
+confirm_btn.pack()
+
+#button that will go to the home page
+main_btn = Button(frame7, text="Back to Home", command=lambda:show_frame(frame1))
+main_btn.pack()
+#-------------------------Frame8
+#thank you frame
+frame8_title = Label(frame8, text="Checkout", bg='red')
+frame8_title.pack(fill='x')
+
+
+finish_order = Label(frame8, text='Thank you ordering with Three Ps')
+finish_order.pack()
+
+#button that goes to the home page
+main_btn = Button(frame8, text="Place another order", command=lambda:show_frame(frame1))
+main_btn.pack()
+#--------------------------------
+#shows frame1 as the default
+show_frame(frame1)
+frame1.grid(row=0, column=0, sticky='nsew')
+
+#enables the window to open and function
+window.mainloop()
